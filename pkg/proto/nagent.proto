@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option go_package = "/pkg/proto/pb";
+
+service NetworkAgent{
+    rpc SetTask (workRequest) returns (stream StreamResp);
+}
+
+message Response{
+    bool ok = 1;
+    string error = 2;
+}
+
+message workRequest{
+    string RepoUrl = 1;
+}
+
+message StreamResp{
+    string status = 1;
+    string task = 2;
+    repeated string logs = 3;
+}
