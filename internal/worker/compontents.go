@@ -15,5 +15,7 @@ func InitComponent(t workerType, cfg *config.Config, logger *logger.Logger, url 
 	switch t{
 	case "cloner":
 		return initCloner(cfg, logger, url, statusChan)
+	default:
+		return nil
 	}
 }
