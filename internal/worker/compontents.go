@@ -11,9 +11,9 @@ type WorkerComponent interface{
 
 type workerType string
 
-func InitComponent(t workerType, cfg *config.Config, logger *logger.Logger) WorkerComponent {
+func InitComponent(t workerType, cfg *config.Config, logger *logger.Logger, url string, statusChan chan string) WorkerComponent {
 	switch t{
 	case "cloner":
-		return initCloner(cfg, logger)
+		return initCloner(cfg, logger, url, statusChan)
 	}
 }

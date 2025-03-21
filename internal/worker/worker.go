@@ -10,7 +10,6 @@ type Worker struct{
 	logger *logger.Logger
 	statusChan chan string
 	taskChan chan string
-	logsChan chan string
 	components []WorkerComponent
 }
 
