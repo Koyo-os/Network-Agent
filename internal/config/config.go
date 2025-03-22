@@ -1,7 +1,7 @@
 package config
 
 type Notify struct {
-	Send   string `yaml:"send"`
+	Send   bool   `yaml:"send"`
 	ChatId int64  `yaml:"chat_id"`
 	Token  string `yaml:"token"`
 }

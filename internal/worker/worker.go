@@ -6,29 +6,40 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type Worker struct{
-	cfg *config.Config
-	logger *logger.Logger
+type Worker struct {
+	cfg        *config.Config
+	logger     *logger.Logger
 	statusChan chan string
-	taskChan chan string
+	taskChan   chan string
 	components []WorkerComponent
+	url        string
 }
 
-func Init(cfg *config.Config) *Worker {
-	var components []WorkerComponent
+func Init(cfg *config.Config, url string) *Worker {
+	var taskChan chan string
 
+	var components []WorkerComponent
+	if cfg.NotifyCfg.Send {
+		components = append(components, InitComponent(
+			SENDER,
+			cfg,
+			logger,
+			url,
+			taskChan,
+		))
+	}
 
 	return &Worker{
-		cfg: cfg,
+		cfg:    cfg,
 		logger: logger.Init(),
 	}
 }
 
-func (w *Worker) Run(url string) error {
-	for _, c := range w.components{
-		if err := c.Run();err != nil{
+func (w *Worker) Run() error {
+	for _, c := range w.components {
+		if err := c.Run(); err != nil {
 			w.logger.Error("error run component", zapcore.Field{
-				Key: "err",
+				Key:    "err",
 				String: err.Error(),
 			})
 		}
@@ -36,3 +47,4 @@ func (w *Worker) Run(url string) error {
 
 	return nil
 }
+
