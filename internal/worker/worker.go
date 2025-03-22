@@ -17,6 +17,39 @@ type Worker struct {
 
 func Init(cfg *config.Config, url string) *Worker {
 	var taskChan chan string
+	var statusChan chan string
+
+	logger := logger.Init()
+
+	components = append(components,
+		InitComponent(
+			CLONER,
+			cfg,
+			logger,
+			url,
+			taskChan,
+		),
+		InitComponent(
+			TESTER,
+			cfg,
+			logger,
+			url,
+			taskChan,
+		),
+		InitComponent(
+			BUILDER,
+			cfg,
+			logger,
+			url,
+			taskChan,
+		),
+		InitComponent(
+			LINTER,
+			cfg,
+			logger,
+			url,
+			taskChan,
+		))
 
 	var components []WorkerComponent
 	if cfg.NotifyCfg.Send {
@@ -30,8 +63,10 @@ func Init(cfg *config.Config, url string) *Worker {
 	}
 
 	return &Worker{
-		cfg:    cfg,
-		logger: logger.Init(),
+		cfg:        cfg,
+		logger:     logger,
+		components: components,
+		taskChan:   taskChan,
 	}
 }
 
@@ -47,4 +82,3 @@ func (w *Worker) Run() error {
 
 	return nil
 }
-
