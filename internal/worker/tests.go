@@ -9,14 +9,18 @@ import (
 )
 
 type Tester struct {
-	cfg    *config.Config
-	logger *logger.Logger
+	cfg        *config.Config
+	logger     *logger.Logger
+	statusChan chan string
+	url        string
 }
 
-func initTester(cfg *config.Config, logger *logger.Logger) *Tester {
+func initTester(cfg *config.Config, logger *logger.Logger, url string, statusChan chan string) *Tester {
 	return &Tester{
-		cfg:    cfg,
-		logger: logger,
+		cfg:        cfg,
+		logger:     logger,
+		statusChan: statusChan,
+		url:        url,
 	}
 }
 
@@ -34,4 +38,3 @@ func (t *Tester) Run() error {
 
 	return nil
 }
-

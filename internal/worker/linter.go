@@ -8,15 +8,15 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type Builder struct {
+type Linter struct {
 	cfg        *config.Config
 	logger     *logger.Logger
-	statusChan chan string
 	url        string
+	statusChan chan string
 }
 
-func initBuiler(cfg *config.Config, logger *logger.Logger, url string, statusChan chan string) *Builder {
-	return &Builder{
+func initLinter(cfg *config.Config, logger *logger.Logger, url string, statusChan chan string) *Linter {
+	return &Linter{
 		cfg:        cfg,
 		logger:     logger,
 		statusChan: statusChan,
@@ -24,20 +24,16 @@ func initBuiler(cfg *config.Config, logger *logger.Logger, url string, statusCha
 	}
 }
 
-func (b *Builder) Run() error {
-	b.statusChan <- "ok"
-
-	cmd := exec.Command("go", "build", "-o", b.cfg.BuildCfg.OutputPoint, b.cfg.BuildCfg.InputPoint)
+func (l *Linter) Run() error {
+	cmd := exec.Command("golangci-lint", "run")
 	if err := cmd.Run(); err != nil {
-		b.logger.Error("cant build", zapcore.Field{
+		l.logger.Error("error linter", zapcore.Field{
 			Key:    "err",
 			String: err.Error(),
 		})
-
-		b.statusChan <- "err build"
-
-		return err
 	}
+
+	l.logger.Info("success lint")
 
 	return nil
 }
