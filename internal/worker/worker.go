@@ -10,16 +10,18 @@ type Worker struct {
 	cfg        *config.Config
 	logger     *logger.Logger
 	statusChan chan string
-	taskChan   chan string
+	taskChan   chan int
 	components []WorkerComponent
 	url        string
 }
 
 func Init(cfg *config.Config, url string) *Worker {
-	var taskChan chan string
 	var statusChan chan string
+	var taskChan chan int
 
 	logger := logger.Init()
+
+	var components []WorkerComponent
 
 	components = append(components,
 		InitComponent(
@@ -27,38 +29,37 @@ func Init(cfg *config.Config, url string) *Worker {
 			cfg,
 			logger,
 			url,
-			taskChan,
+			statusChan,
 		),
 		InitComponent(
 			TESTER,
 			cfg,
 			logger,
 			url,
-			taskChan,
+			statusChan,
 		),
 		InitComponent(
 			BUILDER,
 			cfg,
 			logger,
 			url,
-			taskChan,
+			statusChan,
 		),
 		InitComponent(
 			LINTER,
 			cfg,
 			logger,
 			url,
-			taskChan,
+			statusChan,
 		))
 
-	var components []WorkerComponent
 	if cfg.NotifyCfg.Send {
 		components = append(components, InitComponent(
 			SENDER,
 			cfg,
 			logger,
 			url,
-			taskChan,
+			statusChan,
 		))
 	}
 
@@ -66,12 +67,16 @@ func Init(cfg *config.Config, url string) *Worker {
 		cfg:        cfg,
 		logger:     logger,
 		components: components,
+		statusChan: statusChan,
 		taskChan:   taskChan,
 	}
 }
 
 func (w *Worker) Run() error {
-	for _, c := range w.components {
+	for i, c := range w.components {
+
+		w.taskChan <- i
+
 		if err := c.Run(); err != nil {
 			w.logger.Error("error run component", zapcore.Field{
 				Key:    "err",
