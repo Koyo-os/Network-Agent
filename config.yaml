@@ -1,0 +1,9 @@
+port : 50051
+host : localhost
+temp_dir_name : nagent
+
+build:
+  input: cmd/main.go
+  output: bin/app
+notify:
+  send: false

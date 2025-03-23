@@ -42,4 +42,6 @@ func (s *Server) SetTask(req *pb.WorkRequest,stream grpc.ServerStreamingServer[p
 			})
 		}
 	}
+
+	return nil
 }
