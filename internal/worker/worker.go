@@ -13,12 +13,10 @@ type Worker struct {
 	taskChan   chan int
 	components []WorkerComponent
 	url        string
+	cherr chan error
 }
 
-func Init(cfg *config.Config, url string) *Worker {
-	var statusChan chan string
-	var taskChan chan int
-
+func Init(cfg *config.Config, url string, statusChan chan string, taskChan chan int, cherr chan error) *Worker {
 	logger := logger.Init()
 
 	var components []WorkerComponent
@@ -72,7 +70,7 @@ func Init(cfg *config.Config, url string) *Worker {
 	}
 }
 
-func (w *Worker) Run() error {
+func (w *Worker) Run() {
 	for i, c := range w.components {
 
 		w.taskChan <- i
@@ -82,8 +80,8 @@ func (w *Worker) Run() error {
 				Key:    "err",
 				String: err.Error(),
 			})
+
+			w.cherr <- err
 		}
 	}
-
-	return nil
 }
