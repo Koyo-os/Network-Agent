@@ -36,10 +36,9 @@ func (s *Server) SetTask(req *pb.WorkRequest,stream grpc.ServerStreamingServer[p
 				String: err.Error(),
 			})
 		case status := <- s.StatusChan:
-			task := s.TaskChan
 			stream.Send(&pb.StreamResp{
 				Status: status,
-				
+				Task: int32(i),
 			})
 		}
 	}

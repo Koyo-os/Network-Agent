@@ -17,6 +17,5 @@ message workRequest{
 
 message StreamResp{
     string status = 1;
-    string task = 2;
-    repeated string logs = 3;
+    int32 task = 2;
 }
